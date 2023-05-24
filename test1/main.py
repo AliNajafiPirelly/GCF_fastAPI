@@ -1,9 +1,9 @@
 from multiprocessing import Process
 import os
 from flask import Request
-from fastapi import FastAPI,APIRouter
+from fastapi import FastAPI
 import uvicorn
-from threading import Thread
+
 
 app = FastAPI()
 start = False
