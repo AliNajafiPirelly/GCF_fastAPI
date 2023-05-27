@@ -18,7 +18,7 @@ def start_fastapi():
     print('fast api starting ...')
     global start
     if not start:
-        trd = Process(target=uvicorn.run,kwargs={"app":"main:app"})
+        trd = Process(target=uvicorn.run,kwargs={"app":"main:app","port":5060,"host":"localhost"})
         start = True
         return trd
 
@@ -31,24 +31,29 @@ def stop_fastapi(prcss:Process):
 def mock_func(req:Request):
     print(os.getpid())
     global start
+    global fapi_prcss
     if not start:
-        if req.headers.get('X-START-API','') == '1':
-            if req.headers.get('Authorization') == 'authorize':
-                fapi_prcss = start_fastapi()
-                fapi_prcss.start()
-                start = True
+        if req.headers.get('X-Start-Api','') == '1':
+            if req.authorization:
+                if req.authorization.token == 'authorize':
+                    fapi_prcss = start_fastapi()
+                    fapi_prcss.start()
+                    start = True
+                    return f"fast api running on Process {fapi_prcss.pid}",200
     
     if req.headers.get('X-STOP-API','') == '1':
-        if req.headers.get('Authorization') == 'authorize':
-            if start:
-                if fapi_prcss:
-                    stop_fastapi(fapi_prcss)
-                    start = False
+        if req.authorization:
+            if req.authorization.token == 'authorize':
+                if start:
+                    if fapi_prcss:
+                        stop_fastapi(fapi_prcss)
+                        start = False
+                        return f"fast api stopped"
     
     return {
         "args":req.args,
         "scheme":req.scheme,
-        "authorization":req.authorization.token,
+        "authorization":getattr(req,'authorization',None),
         "base_url":req.base_url,
         "blueprints":req.blueprints,
         "content_length":req.content_length,
