@@ -19,7 +19,7 @@ class APIManager(Manageable):
 
     @property
     def started(self):
-        return self.server_thread.is_alive()
+        return self.server_thread.is_alive() if self.server_thread else False
 
     def pre_start(self):
         pass
