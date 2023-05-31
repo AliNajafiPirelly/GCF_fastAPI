@@ -59,6 +59,8 @@ class GatewayConfig(BaseSettings):
 
     gateway_name : str = None
 
+    is_debug : bool = False
+
     api_name:str = Field(
         title="Target API Name ",
         description="The Target API that this gateway is going to handle"
