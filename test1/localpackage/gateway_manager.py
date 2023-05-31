@@ -95,7 +95,7 @@ class GatewayManager:
         method = flask_request.method.lower()
         cookies = self._handle_cookies(flask_request)
         params = flask_request.args
-
+        print('method',method)
         request_params = self._request_factory(
             kwargs_only=True,
             headers=headers,
@@ -123,7 +123,7 @@ class GatewayManager:
     def handle_response(self,response:Response):
         """handles the response from api """
         res = FlaskResponse(
-            headers=response.headers,
+            headers={k:v for k,v in response.headers.items()},
             status=response.status_code,
             response=response.content ,
             content_type= response.headers.get('Content-type')
@@ -158,7 +158,7 @@ class GatewayManager:
             'timeout' : self.gateway_config.gateway_timeout,
         }
         if kwargs_only:
-            kwargs.pop('method')
+            kw.pop('method')
             return kw
 
         return make_response(**kw)
@@ -208,6 +208,8 @@ class GatewayManager:
             return self.handle_request(flask_request)
         except Exception as err:
             print("error happened : ",err)
+            if self.gateway_config.is_debug:
+                raise err
             return self._get_message(err)
 
 
@@ -249,7 +251,7 @@ class GatewayManager:
                 return {
                     "Error" : err.__str__()
                 },500
-            return "",500
+            return "Internal Server error",500
 
     def extract_data(self, flask_request:FlaskRequest):
         return flask_request.data

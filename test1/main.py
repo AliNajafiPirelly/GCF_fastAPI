@@ -22,6 +22,13 @@ def get_hello():
     """some example function"""
     return "pong"
 
+@app.get('/some-endpoint')
+def som_endpoint():
+    """some endpoint"""
+    return {
+        "hello":"world"
+    }
+
 
 def mock_func(req:Request):
     return adaptor.manage(req)
