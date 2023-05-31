@@ -4,8 +4,8 @@ from flask import Request as FlaskRequest , Response as FlaskResponse
 
 from localpackage.api_manager import APIManager
 from localpackage.types import  GatewayConfig, APIConfig
-from .errors import GatewayError
-
+from .errors import GatewayError,APIError
+from logging import Logger
 
 class GatewayManager:
     """
@@ -211,7 +211,7 @@ class GatewayManager:
 
 
     def start_api(self):
-        if not self.started:
+        if not self._api_manager.started:
             self._api_manager.start()
             self.started = True
             return
@@ -231,10 +231,22 @@ class GatewayManager:
         message = {}
 
         if isinstance(err,GatewayError):
-            message['reason'] = err.reason
-            message['code'] = err.code
-            return message,400
+            if self.gateway_config.is_debug:
+                message['reason'] = err.reason
+                message['code'] = err.code
+                return message,400
+            return "",400
+        if isinstance(err,APIError):
+            if self.gateway_config.is_debug:
+                message['reason'] = err.reason
+                message['code'] = err.code
+                return message,500
+            return "",500
         else:
+            if self.gateway_config.is_debug:
+                return {
+                    "Error" : err
+                },500
             return "",500
 
     def extract_data(self, flask_request:FlaskRequest):
