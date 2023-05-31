@@ -31,11 +31,11 @@ class Manageable:
         """
         raise NotImplemented()
     @abc.abstractmethod
-    def pre_stop(self):
+    def pre_stop(self,stop_type: ServerStopType = None):
         pass
 
     @abc.abstractmethod
-    def post_stop(self):
+    def post_stop(self,stop_type: ServerStopType = None):
         pass
 
     @abc.abstractmethod
@@ -101,8 +101,8 @@ class APIConfig(BaseSettings):
         description="Start endpoint of the api. in otherwords it is the base url of the api",
         )
     target_api_port : int = 8000
-    target_api_host_url: str
-    target_api_scheme: str
+    target_api_host_url: str = "127.0.0.1"
+    target_api_scheme: str = "http"
 
     target_api_with_thread: bool = Field(
         default= False,
