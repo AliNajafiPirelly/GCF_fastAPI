@@ -50,7 +50,7 @@ class GatewayManager:
         self._check_admin(admin_token)
         self._check_api_key("")
 
-    def _check_header(self, request:FlaskRequest):
+    def _check_header(self, flask_request:FlaskRequest):
         """
         check and validate headers base on config
         and return dict of headers
@@ -60,7 +60,7 @@ class GatewayManager:
         Returns:
 
         """
-        pass
+        return {k:v for k,v in flask_request.headers.items()}
 
     def _check_admin(cls, token:str):
         pass
@@ -68,14 +68,15 @@ class GatewayManager:
     def _check_api_key(self, key:str):
         pass
 
-    def _handle_files(self, files):
-        pass
+    def _handle_files(self, flask_request:FlaskRequest):
+
+        return flask_request.files.items()
 
     def _extract_endpoint(self, request:FlaskRequest):
-        pass
+        return request.path
 
     def _handle_cookies(self,request:FlaskRequest):
-        pass
+        return request.cookies.items()
 
     def handle_request(self,flask_request:FlaskRequest):
         """
@@ -202,7 +203,7 @@ class GatewayManager:
 
         """
         try:
-            self._handel_api(flask_request)
+            #self._handel_api(flask_request)
             return self.handle_request(flask_request)
         except Exception as err:
             print("error happened : ",err)
@@ -235,6 +236,10 @@ class GatewayManager:
             return message,400
         else:
             return "",500
+
+    def extract_data(self, flask_request:FlaskRequest):
+        return flask_request.data
+
 
 
     
