@@ -55,13 +55,14 @@ class GatewayConfig(BaseSettings):
     variables to as settings
     """
 
-    version:int
+    version:tuple = (1,0,0)
 
     gateway_name : str = None
 
     is_debug : bool = False
 
     api_name:str = Field(
+        None,
         title="Target API Name ",
         description="The Target API that this gateway is going to handle"
         )
