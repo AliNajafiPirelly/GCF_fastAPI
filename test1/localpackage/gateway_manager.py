@@ -203,27 +203,29 @@ class GatewayManager:
 
         """
         try:
-            #self._handel_api(flask_request)
+            if not self._api_manager.started:
+                self.start_api()
             return self.handle_request(flask_request)
         except Exception as err:
             print("error happened : ",err)
             return self._get_message(err)
 
 
-    def start_api(self):
+    def start_api(self,raise_exception=False):
         if not self._api_manager.started:
             self._api_manager.start()
             self.started = True
             return
-        raise GatewayError(reason="API already started",code=13)
+        if raise_exception:
+            raise GatewayError(reason="API already started",code=13)
 
-    def stop_api(self):
+    def stop_api(self,raise_exception=False):
         if self.started:
             self._api_manager.stop()
             self.started = False
             return
-
-        raise GatewayError(reason="API already stopped",code=14)
+        if raise_exception:
+            raise GatewayError(reason="API already stopped",code=14)
 
 
     def _get_message(self,err):
@@ -245,7 +247,7 @@ class GatewayManager:
         else:
             if self.gateway_config.is_debug:
                 return {
-                    "Error" : err
+                    "Error" : err.__str__()
                 },500
             return "",500
 
